@@ -40,6 +40,7 @@
 
 
 #include <fstream>
+#include <filesystem>
 
 namespace Fcmb {
 
@@ -55,6 +56,15 @@ namespace Fcmb {
 
   void CopyBinary(const std::string& source, const std::string& target);
   void MoveBinary(const std::string& source, const std::string& target);
+  void RemoveBinary(const std::string& filename);
+  void CreateDirectory(const std::string& path);
+  void RemoveDirectory(const std::string& path);
+  void WriteFile(const std::string& filename, const std::string& content);
+  std::string ReadFile(const std::string& filename);
+  void ReadFile(const std::string& filename, std::string& content);
+  std::string ConvertPathToString(const std::string path);
+  std::string ConvertPathToString(const std::filesystem::path path);
+  char * ConvertPathToChar(const std::filesystem::path path);
 }
 
 #endif /* defined(__Fcmb__Scanner__) */

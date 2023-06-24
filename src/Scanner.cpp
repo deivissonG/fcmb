@@ -23,6 +23,7 @@
 */
 #include "Scanner.h"
 #include "Utils.h"
+#include <filesystem>
 
 #include <cstring>
 #ifdef _WIN32
@@ -65,6 +66,7 @@ void Scanner::ScanImage()
   m_Buffer = (unsigned char *) malloc(m_ImageSize.nImageSize);
 
   std::cout << "Please put your finger on the scanner: " << std::endl;
+  // callback com flag para inserir o dedo
 
   while(true)
   {
@@ -79,11 +81,14 @@ void Scanner::ScanImage()
   }
 
   LOG("Capturing fingerprint...")
+  // callback com flag de capturando
+
 
   if(ftrScanGetFrame(m_Device, m_Buffer, NULL))
   {
     LOG("Done\nWriting to file...")
     WriteBmpFile(m_ImageSize.nWidth, m_ImageSize.nHeight);
+    // callback com flag de sucesso
   }
   else
   {
@@ -92,11 +97,13 @@ void Scanner::ScanImage()
     if (error == FTR_ERROR_MOVABLE_FINGER)
     {
       LOG("Trying again")
+      // callback com flag para tentar novamente (?)
       ScanImage();
     }
     else
     {
       ShowError(error);
+      // callback com flag de erro
     }
   }
 }
@@ -160,7 +167,8 @@ void Scanner::WriteBmpFile(int width, int height)
   bmfHeader.offBits = 14 + bitmapInfo->header.size + sizeof(RGBQuad) * 256;
   //write to file
   FILE *fp;
-  fp = fopen(m_Output.c_str(), "wb");
+  std::cout << "Output: " << Fcmb::ConvertPathToChar(m_Output) << std::endl;
+  fp = fopen(Fcmb::ConvertPathToChar(m_Output), "w+");
   if(fp == NULL)
   {
     free(bitmapInfo);

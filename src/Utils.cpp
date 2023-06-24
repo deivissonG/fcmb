@@ -25,6 +25,8 @@
 
 #include <iostream>
 #include <fstream>
+#include <filesystem>
+#include <string.h>
 
 namespace Fcmb {
   void CopyBinary(const std::string& source, const std::string& target)
@@ -47,5 +49,67 @@ namespace Fcmb {
   {
     CopyBinary(source, target);
     remove(source.c_str());
+  }
+
+  void RemoveBinary(const std::string& filename)
+  {
+    remove(filename.c_str());
+  }
+
+  void CreateDirectory(const std::string& path)
+  {
+    if (std::filesystem::exists(path)) {
+      LOG("Directory already exists")
+      return;
+    }
+    LOG("Creating directory")
+    if (system(("mkdir -p " + path).c_str())) {
+      std::cout << "Failed to create directory " << path << "!" << std::endl;
+    } else {
+      LOG("Done!")
+    }
+  }
+
+  void WriteFile(const std::string& path, const std::string& content)
+  {
+    std::ofstream file;
+    file.open(path);
+    file << content;
+    file.close();
+    LOG("File successfully written")
+  }
+
+  void ReadFile(const std::string& filename, std::string& content) {
+    std::ifstream file(filename);
+    std::string line;
+    while (std::getline(file, line)) {
+      content += line + "\n";
+    }
+    file.close();
+  }
+
+  std::string ConvertPathToString(const std::string path)
+  {
+    std::string path_str = path;
+    if (!path_str.empty()) {
+      if (path_str[0] == '"')
+        path_str.erase(0, 1);
+
+      if (path_str[path_str.size() - 1] == '"')
+        path_str.pop_back();
+    }
+    return path_str;
+  }
+
+  char * ConvertStringToChar(const std::string str)
+  {
+    char *cstr = new char[str.length() + 1];
+    strcpy(cstr, str.c_str());
+    return cstr;
+  }
+
+  char * ConvertPathToChar(const std::filesystem::path path)
+  {
+    return ConvertStringToChar(ConvertPathToString(path.string()));
   }
 }
